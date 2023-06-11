@@ -4,19 +4,22 @@ import scrapy
 class Pak1Spider(scrapy.Spider):
     name = 'pak1'
     allowed_domains = ['pakwheels.com']
-    start_urls = ['https://www.pakwheels.com/used-cars/search/-/']
+    start_urls = ['https://www.pakwheels.com/used-cars/search/-/mk_toyota/ct_karachi/md_corolla/?q=grande']
+    headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+}
 
     def parse(self, response):
         urls=response.xpath('//div[@class="search-title"]/a/@href').extract()
         for url in urls:
             comp_url='https://www.pakwheels.com'+url
-            yield scrapy.Request(comp_url, callback=self.parse_car)
+            yield scrapy.Request(comp_url, callback=self.parse_car, headers=self.headers)
 
         # Next Page
         next_page=response.xpath('//li[@class="next_page"]/a/@href').extract_first()
         if (next_page):
             comp_url='https://www.pakwheels.com'+next_page
-            yield scrapy.Request(comp_url, callback=self.parse)
+            yield scrapy.Request(comp_url, callback=self.parse, headers=self.headers)
 
 
 
